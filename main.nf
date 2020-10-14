@@ -2,6 +2,39 @@
 
 nextflow.enable.dsl=2
 
+def helpMsg() {
+  log.info """
+   Usage:
+   The typical command for running the pipeline is as follows:
+   nextflow run main.nf --xlsx RNASeq.xlsx
+   nextflow run main.nf --file RNASeq.csv --delim ','
+
+   Mandatory arguments:
+    --xlsx                  Excel file containing RNASeq counts where [columns = treatment; rows = genes/gene-probes]
+    or
+    --file                  Text file containing RNASeq counts where [columns = treatment; rows = genes/gene-probes]
+    --delim                 Specifies the delimiter of the textfile [default: '\t']
+
+   Optional configuration arguments:
+    -profile                Configuration profile to use. Can use multiple (comma separated)
+                            Available: local, condo, atlas, singularity [default:local]
+
+   Optional other arguments:
+    --help
+"""
+}
+
+if (params.help) {
+  helpMsg()
+  exit 0
+}
+
+if( !params.xlsx & !params.file) {
+  helpMsg()
+  exit 0
+}
+
+
 process read_xlsx {
   tag "$xlsx.fileName"
 
