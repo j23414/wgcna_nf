@@ -39,7 +39,7 @@ Usage:
   
 ### Tutorial
 
-Fetch the WGCNA Tutorial dataset
+Fetch the WGCNA Tutorial dataset
 
 ```
 wget https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/Tutorials/FemaleLiver-Data.zip
@@ -59,7 +59,12 @@ nextflow run main.nf --file LiverFemale3600.csv --delim ','
 #> N E X T F L O W  ~  version 20.07.1
 #> Launching `main.nf` [compassionate_bartik] - revision: abc410b4a8
 #> Hello world
-#> executor >  local (1)
-#> [ab/f35e1a] process > read_delim (LiverFemale3600.csv) [100%] 1 of 1 ✔
-#> /Users/jenchang/Desktop/2020-10-14/wgcna_nf/work/ab/f35e1a63f80dc3518942face33f739/LiverFemale3600.RData
+#> exectuor > local (2)
+[52/f3ab7e] process > read_delim (LiverFemale3600.csv) [100%] 1 of 1 ✔
+[61/5947da] process > plot_expression (1)              [100%] 1 of 1 ✔
+/Users/jenchang/Desktop/2020-10-14/wgcna_nf/work/61/5947da1252389a5b005fbeacab3c55/expression.png
 ```
+
+**results/expression.png**
+
+<img src="imgs/expression.png" alt="Girl in a jacket" />

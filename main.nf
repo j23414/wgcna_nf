@@ -84,6 +84,39 @@ process read_delim {
   """
 }
 
+process plot_expression {
+  input:
+  path in_RData
+  // specify expression columns
+  // specify gene probe column
+
+  output:
+  path "*"
+
+  script:
+  """
+  #! /usr/bin/env Rscript
+  library(magrittr)
+  library(ggplot2)
+
+  load(\"$in_RData\")
+  cdata <- data %>%
+    tidyr::pivot_longer(., cols = starts_with("F2"))
+
+  p <- cdata %>% ggplot(., aes(x=name, y= value, group=substanceBXH)) +
+    geom_line(alpha=0.5) +
+    theme_bw() +
+    theme(
+      axis.text.x = element_text(angle=90, hjust=0.5)
+      )+
+    labs(
+      x="treatment",
+      y="expression"
+      )
+  ggsave("expression.png", plot=p, height=3, width=9)
+  """
+}
+
 workflow {
   println("Hello world")
 
@@ -94,6 +127,7 @@ workflow {
   } else {
     rnaseq_ch = channel.fromPath(params.file, checkIfExists:true) |
       read_delim |
+      plot_expression |
       view
   }
 }
