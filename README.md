@@ -36,3 +36,30 @@ Usage:
   # ... R commands here
   save(data1, data2, data3, file = "output.RData")  #<- save output data
   ```
+  
+### Tutorial
+
+Fetch the WGCNA Tutorial dataset
+
+```
+wget https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/Tutorials/FemaleLiver-Data.zip
+unzip FemaleLiver-Data.zip
+
+#> Archive:  FemaleLiver-Data.zip
+#>  inflating: ClinicalTraits.csv      
+#>  inflating: GeneAnnotation.csv      
+#>  inflating: LiverFemale3600.csv 
+```
+
+Run pipeline on dataset
+
+```
+nextflow run main.nf --file LiverFemale3600.csv --delim ','
+
+#> N E X T F L O W  ~  version 20.07.1
+#> Launching `main.nf` [compassionate_bartik] - revision: abc410b4a8
+#> Hello world
+#> executor >  local (1)
+#> [ab/f35e1a] process > read_delim (LiverFemale3600.csv) [100%] 1 of 1 ✔
+#> /Users/jenchang/Desktop/2020-10-14/wgcna_nf/work/ab/f35e1a63f80dc3518942face33f739/LiverFemale3600.RData
+```

@@ -13,7 +13,7 @@ def helpMsg() {
     --xlsx                  Excel file containing RNASeq counts where [columns = treatment; rows = genes/gene-probes]
     or
     --file                  Text file containing RNASeq counts where [columns = treatment; rows = genes/gene-probes]
-    --delim                 Specifies the delimiter of the textfile [default: '\t']
+    --delim                 Specifies the delimiter of the textfile [default: '\\t']
 
    Optional configuration arguments:
     -profile                Configuration profile to use. Can use multiple (comma separated)
@@ -34,6 +34,19 @@ if( !params.xlsx & !params.file) {
   exit 0
 }
 
+process fetch_testdata {
+  publishDir './'
+
+  output:
+  path "*"
+
+  script:
+  """
+  #! /usr/bin/env bash
+  wget https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/Tutorials/FemaleLiver-Data.zip
+  unzip FemaleLiver-Data.zip
+  """
+}
 
 process read_xlsx {
   tag "$xlsx.fileName"
