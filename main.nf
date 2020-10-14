@@ -127,7 +127,8 @@ workflow {
   } else {
     rnaseq_ch = channel.fromPath(params.file, checkIfExists:true) |
       read_delim |
-      plot_expression |
       view
   }
+
+  rnaseq_ch | plot_expression | view
 }
