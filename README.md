@@ -32,11 +32,13 @@ Usage:
 * Pass data between R processes via RData files
 
   ```
-  load("input.RData")                        # <- load in prior data
+  load(\"$input_RData\")                        # <- load in prior data
   # ... R commands here
-  save(data1, data2, data3, file = "output.RData")  #<- save output data
+  save(data1, data2, data3, file = \"${input_RData.simpleName}.RData\")  #<- save output data
   ```
-  
+
+* Remember to escape double quotation marks inside nextflow script blocks
+
 ### Tutorial
 
 Fetch the WGCNA Tutorial dataset
