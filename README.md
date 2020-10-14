@@ -80,12 +80,14 @@ nextflow run main.nf --file LiverFemale3600.csv --delim ','
 **results/softthreshold.png**
 
 <center>
-<img src="imgs/softthreshold.png" alt="Girl in a jacket" width=400/>
+<img src="imgs/softthreshold.png" alt="Girl in a jacket" width=500/>
 </center>
 
 **results/wgcna_modules.png**
 
 <img src="imgs/wgcna_modules.png" alt="Girl in a jacket" />
+
+-----
 
 ### FlowChart
 
