@@ -87,6 +87,7 @@ process read_delim {
 }
 
 process plot_expression {
+  tag "${in_RData.fileName}"
   input:
   path in_RData
   // specify expression columns
@@ -170,7 +171,7 @@ process pick_soft_threshold {
     )
 
   # Plot the results:
-  png("softthreshold.png", width=800, height=400)
+  png("softthreshold.png", width=600, height=300)
   par(mfrow = c(1,2));
   cex1 = 0.9;
   plot(
@@ -211,7 +212,7 @@ process wgcna_network {
   path in_RData
 
   output:
-  path "*"
+  tuple path("*TOM*"), path("*.png"), path("*clusters.RData")
 
   script:
   """
@@ -243,6 +244,84 @@ process wgcna_network {
     dendroLabels = FALSE, hang = 0.03,
     addGuide = TRUE, guideHang = 0.05)
   dev.off()
+
+  save(mergedColors, file = '${in_RData.simpleName}_clusters.RData')
+  """
+}
+
+process append_clusters {
+  tag "${mergedColors_RData.fileName}"
+
+  input:
+  tuple path(mergedColors_RData), path(data_RData)
+
+  output:
+  path "*"
+
+  script:
+  """
+  #! /usr/bin/env Rscript
+  load('$mergedColors_RData')
+  load('$data_RData')
+
+  fin_data = data
+  fin_data\$cluster = mergedColors
+
+  save(fin_data, file = '${data_RData.simpleName}_clusters.RData')
+  """
+}
+
+process toExcel {
+  tag "${RData.fileName}"
+
+  input:
+  path(RData)
+
+  output:
+  path("${RData.simpleName}.xlsx")
+
+  script:
+  """
+  #! /usr/bin/env Rscript
+  load('$RData')  # fin_data
+
+  writexl::write_xlsx(fin_data, path="${RData.simpleName}.xlsx")
+  """
+}
+
+process plot_expression_clusters {
+  tag "${RData.fileName}"
+  input:
+  path(RData)
+
+  output:
+  path("*")
+
+  script:
+  """
+  #! /usr/bin/env Rscript
+  load('$RData')
+  library(ggplot2)
+  library(magrittr)
+
+  m_fin_data <- fin_data %>%
+    tidyr::pivot_longer(cols = matches('^F2', perl=TRUE))
+
+  my_palette = unique(m_fin_data\$cluster)
+  names(my_palette) = unique(m_fin_data\$cluster)
+
+  p <- m_fin_data %>%
+    ggplot(., aes(x=name, y=value, group=substanceBXH, color=cluster)) +
+    geom_line(alpha=0.5) +
+    theme_bw() +
+    theme(
+      axis.text.x = element_text(angle=90, hjust=1, vjust = 0.5),
+      legend.position = "none"
+      ) +
+    scale_color_manual(values=my_palette)+
+    labs(x="treatment", y="expression") +
+    facet_wrap(cluster~., ncol = 2)
+  ggsave("expression_clusters.png", plot=p, width=15, height=15)
   """
 }
 
@@ -271,5 +350,16 @@ workflow {
   prep_data.out |
     wgcna_network |
     flatten |
+    view {n -> "...created:  $params.outdir/$n.fileName"}
+
+  wgcna_network.out |
+    map {n -> n.get(2)} |
+    combine(rnaseq_ch) |
+    append_clusters |
+    toExcel |
+    view {n -> "...created:  $params.outdir/$n.fileName"}
+
+  append_clusters.out |
+    plot_expression_clusters |
     view {n -> "...created:  $params.outdir/$n.fileName"}
 }
