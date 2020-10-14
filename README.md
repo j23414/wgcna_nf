@@ -61,12 +61,40 @@ nextflow run main.nf --file LiverFemale3600.csv --delim ','
 #> N E X T F L O W  ~  version 20.07.1
 #> Launching `main.nf` [compassionate_bartik] - revision: abc410b4a8
 #> Hello world
-#> exectuor > local (2)
-[52/f3ab7e] process > read_delim (LiverFemale3600.csv) [100%] 1 of 1 ✔
-[61/5947da] process > plot_expression (1)              [100%] 1 of 1 ✔
-/Users/jenchang/Desktop/2020-10-14/wgcna_nf/work/61/5947da1252389a5b005fbeacab3c55/expression.png
+[05/faff5b] process > read_delim (LiverFemale3600.csv)                [100%] 1 of 1 ✔
+[6c/29d89e] process > plot_expression (1)                             [100%] 1 of 1 ✔
+[90/662c9f] process > prep_data (LiverFemale3600.RData)               [100%] 1 of 1 ✔
+[48/9839ff] process > pick_soft_threshold (LiverFemale3600_mat.RData) [100%] 1 of 1 ✔
+[46/53c869] process > wgcna_network (LiverFemale3600_mat.RData)       [100%] 1 of 1 ✔
+...created:  results/LiverFemale3600.RData
+...created:  results/expression.png
+...created:  results/softthreshold.png
+...created:  results/LiverFemale3600_matTOM-block.1.RData
+...created:  results/wgcna_modules.png
 ```
 
 **results/expression.png**
 
 <img src="imgs/expression.png" alt="Girl in a jacket" />
+
+**results/softthreshold.png**
+
+<center>
+<img src="imgs/softthreshold.png" alt="Girl in a jacket" width=400/>
+</center>
+
+**results/wgcna_modules.png**
+
+<img src="imgs/wgcna_modules.png" alt="Girl in a jacket" />
+
+### FlowChart
+
+Nextflow pipelines can also plot the directed acyclic graph (dag) of the pipeline using `-with-dag flowchart.png`
+
+```
+nextflow run main.nf --file LiverFemale3600.csv --delim ',' -resume -with-dag flowchart.png
+```
+
+<center>
+<img src="imgs/flowchart.png" alt="Girl in a jacket" width=500/>
+</center>

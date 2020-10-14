@@ -20,6 +20,7 @@ def helpMsg() {
                             Available: local, condo, atlas, singularity [default:local]
 
    Optional other arguments:
+    --power                 Soft threshold power, will probably need to be adjusted [default:6]
     --help
 """
 }
@@ -78,8 +79,9 @@ process read_delim {
   script:
   """
   #! /usr/bin/env Rscript
-  data <- readr::read_delim("$infile", delim="$params.delim")
-  names(data) <- gsub(":","_", names(data))
+  data <- readr::read_delim("$infile",
+                            delim="$params.delim")
+  names(data) <- gsub(":", "_", names(data))
   save(data, file="${infile.simpleName}.RData")
   """
 }
@@ -117,18 +119,157 @@ process plot_expression {
   """
 }
 
+process prep_data {
+  tag "${in_RData.fileName}"
+  input:
+  path in_RData
+
+  output:
+  path "${in_RData.simpleName}_mat.RData"
+
+  script:
+  """
+  #! /usr/bin/env Rscript
+  load('$in_RData')
+  library(magrittr)
+
+  inputMatrix <- data %>%
+    dplyr::select(starts_with("F2")) %>%
+    {
+      row.names(.) = data\$substanceBXH
+      .
+    } %>%
+    t(.)
+
+  save(inputMatrix, file = '${in_RData.simpleName}_mat.RData')
+
+  """
+}
+
+process pick_soft_threshold {
+  tag "${in_RData.fileName}"
+  input:
+  path in_RData
+
+  output:
+  path "*"
+
+  script:
+  """
+  #! /usr/bin/env Rscript
+  library(WGCNA)
+  allowWGCNAThreads()
+
+  load('$in_RData')
+
+  powers = c(c(1:10), seq(from=12, to=20, by=2))
+  sft = pickSoftThreshold(
+    inputMatrix,
+    powerVector = powers,
+    verbose = 5
+    )
+
+  # Plot the results:
+  png("softthreshold.png", width=800, height=400)
+  par(mfrow = c(1,2));
+  cex1 = 0.9;
+  plot(
+    sft\$fitIndices[, 1],
+    -sign(sft\$fitIndices[, 3]) * sft\$fitIndices[, 2],
+    xlab = "Soft Threshold (power)",
+    ylab = "Scale Free Topology Model Fit, signed R^2",
+    main = paste("Scale independence")
+  )
+  text(
+    sft\$fitIndices[, 1],
+    -sign(sft\$fitIndices[, 3]) * sft\$fitIndices[, 2],
+    labels = powers,
+    cex = cex1,
+    col = "red"
+  )
+  abline(h = 0.90, col = "red")
+  plot(
+    sft\$fitIndices[, 1],
+    sft\$fitIndices[, 5],
+    xlab = "Soft Threshold (power)",
+    ylab = "Mean Connectivity", type = "n", main = paste("Mean connectivity")
+  )
+  text(
+    sft\$fitIndices[, 1],
+    sft\$fitIndices[, 5],
+    labels = powers,
+    cex = cex1,
+    col = "red"
+    )
+  dev.off()
+  """
+}
+
+process wgcna_network {
+  tag "${in_RData.fileName}"
+  input:
+  path in_RData
+
+  output:
+  path "*"
+
+  script:
+  """
+  #! /usr/bin/env Rscript
+  load('$in_RData')
+
+  library(WGCNA)
+  allowWGCNAThreads()
+
+  netwk = blockwiseModules(
+    inputMatrix,
+    power = $params.power,
+    TOMType = "unsigned",
+    minModuleSize = 30,
+    reassignThreshold = 0,
+    mergeCutHeight = 0.25,
+    numericLabels = TRUE,
+    pamRespectsDendro = FALSE,
+    saveTOMs = TRUE,
+    saveTOMFileBase = "${in_RData.simpleName}TOM",
+    verbose = 3)
+
+  mergedColors = labels2colors(netwk\$colors)
+  png("wgcna_modules.png", width=800, height=300)
+  plotDendroAndColors(
+    netwk\$dendrograms[[1]],
+    mergedColors[netwk\$blockGenes[[1]]],
+    "Module colors",
+    dendroLabels = FALSE, hang = 0.03,
+    addGuide = TRUE, guideHang = 0.05)
+  dev.off()
+  """
+}
+
 workflow {
   println("Hello world")
 
   if ( params.xlsx ) {
     rnaseq_ch = channel.fromPath(params.xlsx, checkIfExists:true) |
       read_xlsx |
-      view
+      view {n -> "...created:  $params.outdir/$n.fileName"}
   } else {
     rnaseq_ch = channel.fromPath(params.file, checkIfExists:true) |
       read_delim |
-      view
+      view {n -> "...created:  $params.outdir/$n.fileName"}
   }
 
-  rnaseq_ch | plot_expression | view
+  rnaseq_ch |
+    plot_expression |
+    view {n -> "...created:  $params.outdir/$n.fileName"}
+
+  rnaseq_ch |
+    prep_data |
+    pick_soft_threshold |
+    view {n -> "...created:  $params.outdir/$n.fileName"}
+
+  prep_data.out |
+    wgcna_network |
+    flatten |
+    view {n -> "...created:  $params.outdir/$n.fileName"}
 }
