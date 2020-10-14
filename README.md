@@ -16,7 +16,7 @@ Usage:
     --xlsx                  Excel file containing RNASeq counts where [columns = treatment; rows = genes/gene-probes]
     or
     --file                  Text file containing RNASeq counts where [columns = treatment; rows = genes/gene-probes]
-    --delim                 Specifies the delimiter of the textfile [default: '	']
+    --delim                 Specifies the delimiter of the textfile [default: '\t']
 
    Optional configuration arguments:
     -profile                Configuration profile to use. Can use multiple (comma separated)
