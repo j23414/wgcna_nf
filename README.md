@@ -1,6 +1,43 @@
-# wgcna_nf
+# A Nextflow Pipeline -- implementing a non-bash pipeline
 
-Attempt a non-bash pipeline in nextflow. In this case, this nextflow script is wrapping the R wgcna pipeline.
+In this case, this nextflow script is wrapping a popular R package, WGCNA.
+
+## What is the WGCNA R package?
+
+The WGCNA R package builds “weighted gene correlation networks for
+analysis” from expression data. It was originally published in 2008 and
+has been used in recent Maize papers for gray leaf disease response ([Yu
+et
+al, 2018](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-018-5072-4#Sec2))
+and development/nutrient/metabolism/stress response ([Ma et
+al, 2017](https://pubmed.ncbi.nlm.nih.gov/28764653/)). The original
+WGCNA publication is below:
+
+  - Langfelder, P. and Horvath, S., 2008. [WGCNA: an R package for
+    weighted correlation network
+    analysis](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-9-559).
+    BMC bioinformatics, 9(1), p.559.
+  - Zhang, B. and Horvath, S., 2005. [A general framework for weighted
+    gene co-expression network
+    analysis](https://pubmed.ncbi.nlm.nih.gov/16646834/). Statistical
+    applications in genetics and molecular biology, 4(1).
+
+More information
+
+  - [WGCNA
+    tutorial](https://horvath.genetics.ucla.edu/html/CoexpressionNetwork/Rpackages/WGCNA/Tutorials/)
+  - [Recent PubMed Papers](https://pubmed.ncbi.nlm.nih.gov/?term=wgcna&sort=date)
+
+### Installing WGCNA
+
+``` r
+# Ah, looks like WGCNA is now available directly on CRAN
+install.packages("WGCNA")
+```
+
+## Running the Nextflow WGCNA pipeline
+
+Here we have wrapped R's WGCNA pipeline in Nextflow dsl2. WGCNA expects RNAseq counts provided as either a Excel (`--xlsx RNASeq.xlsx`) or as a delimited textfile (`--file RNASeq.csv --delim ','`). The help statement with full usage descriptions can be printed using `--help` as shown below:
 
 ```
 $ nextflow run j23414/wgcna_nf -r main --help
@@ -26,8 +63,7 @@ Usage:
     --help
 ```
 
-
-**Main findings** of using R processes (instead of bash processes)
+**Main insights of wrapping an R package in Nextflow:**
 
 * Pass data between R processes via RData files
 
@@ -42,7 +78,7 @@ Usage:
 
 -----
 
-### Tutorial
+## Case Study: Rerun the WGCNA tutorial using the Nextflow pipeline
 
 Fetch the WGCNA Tutorial dataset
 
