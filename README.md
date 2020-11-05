@@ -99,24 +99,26 @@ Run pipeline on dataset
 nextflow run main.nf --file LiverFemale3600.csv --delim ','
 
 #> N E X T F L O W  ~  version 20.07.1
-#> Launching `main.nf` [compassionate_bartik] - revision: abc410b4a8
+#> Launching `main.nf` [mighty_baekeland] - revision: 8637eacc2a
 #> Hello world
-[2a/e61c02] process > read_delim (LiverFemale3600.csv)                          [100%] 1 of 1, cached: 1 ✔
-[af/3ea062] process > plot_expression (LiverFemale3600.RData)                   [100%] 1 of 1, cached: 1 ✔
-[6f/9594ac] process > prep_data (LiverFemale3600.RData)                         [100%] 1 of 1, cached: 1 ✔
-[d9/52afcb] process > pick_soft_threshold (LiverFemale3600_mat.RData)           [100%] 1 of 1, cached: 1 ✔
-[e0/6d2827] process > wgcna_network (LiverFemale3600_mat.RData)                 [100%] 1 of 1, cached: 1 ✔
-[e6/c46ac4] process > append_clusters (LiverFemale3600_mat_clusters.RData)      [100%] 1 of 1, cached: 1 ✔
-[c8/a6613f] process > toExcel (LiverFemale3600_clusters.RData)                  [100%] 1 of 1, cached: 1 ✔
-[fb/e3789a] process > plot_expression_clusters (LiverFemale3600_clusters.RData) [100%] 1 of 1 ✔
-...created:  results/LiverFemale3600.RData
-...created:  results/expression.png
-...created:  results/softthreshold.png
-...created:  results/LiverFemale3600_matTOM-block.1.RData
-...created:  results/wgcna_modules.png
-...created:  results/LiverFemale3600_mat_clusters.RData
-...created:  results/LiverFemale3600_clusters.xlsx
-...created:  results/expression_clusters.png
+#> executor >  local (8)
+#> [5c/a28202] process > read_delim (LiverFemale3600.csv)                          [100%] 1 of 1 ✔
+#> [36/c7438a] process > plot_expression (LiverFemale3600.RData)                   [100%] 1 of 1 ✔
+#> [59/902695] process > prep_data (LiverFemale3600.RData)                         [100%] 1 of 1 ✔
+#> [75/81ab29] process > pick_soft_threshold (LiverFemale3600_mat.RData)           [100%] 1 of 1 ✔
+#> [ee/8c1265] process > wgcna_network (LiverFemale3600_mat.RData)                 [100%] 1 of 1 ✔
+#> [c5/cf6235] process > append_clusters (LiverFemale3600_mat_clusters.RData)      [100%] 1 of 1 ✔
+#> [78/15a7b3] process > toExcel (LiverFemale3600_clusters.RData)                  [100%] 1 of 1 ✔
+#> [f1/ca90a5] process > plot_expression_clusters (LiverFemale3600_clusters.RData) [100%] 1 of 1 ✔
+#> ...created:  results/LiverFemale3600_matTOM-block.1.RData
+#> ...created:  results/wgcna_modules.png
+#> ...created:  results/LiverFemale3600_mat_clusters.RData
+#> ...created:  results/LiverFemale3600_clusters.xlsx
+#> ...created:  results/expression_clusters.png
+#> Completed at: 05-Nov-2020 13:24:12
+#> Duration    : 2m 6s
+#> CPU hours   : (a few seconds)
+#> Succeeded   : 8
 ```
 
 -----
